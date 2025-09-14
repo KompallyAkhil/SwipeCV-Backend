@@ -7,10 +7,15 @@ import getResumesRouter from "./routes/getResumes.js";
 import dashBoardRouter from "./routes/dashBoard.js";
 import swipeResumeRouter from "./routes/swipeResume.js";
 import uploadResumeRouter from "./routes/uploadResume.js";
-
+const allowOrigins = ['http://localhost:5173', 'https://swipecv.vercel.app', 'https://swipecv.akhilkompally.app'];
 dotenv.config();
 const app = express();
-app.use(cors());
+app.options('*', cors());
+app.use(cors({
+  origin : allowOrigins,
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  credentials: true,
+}));
 app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
