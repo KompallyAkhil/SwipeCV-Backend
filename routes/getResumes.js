@@ -1,19 +1,29 @@
-import express from 'express';
-import User from '../models/User.js';
+import express from "express";
+import User from "../models/User.js";
 
 const router = express.Router();
 
 router.get("/:user", async (req, res) => {
-  const { user: username } = req.params; 
+  const { user: username } = req.params;
 
   try {
     const user = await User.findOne({ name: username });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) {
+      user = await User.create({
+        userId: new mongoose.Types.ObjectId().toString(),
+        name: username,
+        resumes: [],
+        liked: [],
+        disliked: [],
+      });
+    }
 
-    const swipedIds = [
-      ...user.liked.map((r) => r.resumeId),
-      ...user.disliked.map((r) => r.resumeId),
-    ];
+    const swipedIds = user
+      ? [
+          ...user.liked.map((r) => r.resumeId),
+          ...user.disliked.map((r) => r.resumeId),
+        ]
+      : [];
 
     const others = await User.find({ name: { $ne: username } });
 
