@@ -24,7 +24,7 @@ dotenv.config();
 })();
 
 router.post("/", upload.single("resume"), async (req, res) => {
-  const { resumeTitle, user } = req.body;
+  const { resumeTitle, user , email} = req.body;
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -55,6 +55,7 @@ router.post("/", upload.single("resume"), async (req, res) => {
           const newUser = await User.create({
             userId: new mongoose.Types.ObjectId().toString(),
             name: user,
+            email: email,
             resumes: [
               {
                 title: resumeTitle || "Untitled Resume",

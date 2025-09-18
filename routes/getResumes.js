@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -7,7 +8,7 @@ router.get("/:user", async (req, res) => {
   const { user: username } = req.params;
 
   try {
-    const user = await User.findOne({ name: username });
+    let user = await User.findOne({ name: username }); // use let here
     if (!user) {
       user = await User.create({
         userId: new mongoose.Types.ObjectId().toString(),
@@ -18,12 +19,10 @@ router.get("/:user", async (req, res) => {
       });
     }
 
-    const swipedIds = user
-      ? [
-          ...user.liked.map((r) => r.resumeId),
-          ...user.disliked.map((r) => r.resumeId),
-        ]
-      : [];
+    const swipedIds = [
+      ...user.liked.map((r) => r.resumeId),
+      ...user.disliked.map((r) => r.resumeId),
+    ];
 
     const others = await User.find({ name: { $ne: username } });
 

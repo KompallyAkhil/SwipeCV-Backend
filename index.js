@@ -8,6 +8,8 @@ import dashBoardRouter from "./routes/dashBoard.js";
 import swipeResumeRouter from "./routes/swipeResume.js";
 import uploadResumeRouter from "./routes/uploadResume.js";
 import getAllResumeDetailsRouter from "./routes/getAllResumeDetails.js";
+import getLikedResumesRouter from "./routes/getLikedResumes.js";
+
 const allowOrigins = ['http://localhost:5173', 'https://swipecv.vercel.app', 'https://swipecv.akhilkompally.app'];
 dotenv.config();
 const app = express();
@@ -38,7 +40,10 @@ app.use("/api/dashboard", dashBoardRouter);
 
 app.use("/swipeResume", swipeResumeRouter);
 
+app.use("/likedResumes", getLikedResumesRouter);
+
 app.use("/api", getAllResumeDetailsRouter);
+
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
 );
