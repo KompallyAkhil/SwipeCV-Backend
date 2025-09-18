@@ -18,6 +18,7 @@ router.get('/:user', async(req,res) => {
                 .filter((r) => likedIds.includes(r.cloudinaryId))
                 .map((r) => ({
                     name: u.name,
+                    email: u.email,
                     ...r.toObject(),
                 }))
         );
