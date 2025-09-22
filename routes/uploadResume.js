@@ -68,6 +68,34 @@ router.post("/", upload.single("resume"), async (req, res) => {
           await newUser.save();
         }
 
+        // Emit socket events
+        const io = req.app.get('io');
+        if (io) {
+          // Ask all clients to refresh resumes lists
+          io.emit('resumes:refresh');
+
+          // Update dashboard for uploader
+          try {
+            const owner = await User.findOne({ name: user });
+            if (owner) {
+              const likes = await User.find({ "liked.name": user }).then((docs) =>
+                docs.reduce((acc, u) => acc + u.liked.filter((r) => r.name === user).length, 0)
+              );
+              const dislikes = await User.find({ "disliked.name": user }).then((docs) =>
+                docs.reduce((acc, u) => acc + u.disliked.filter((r) => r.name === user).length, 0)
+              );
+              io.to(`user:${user}`).emit('dashboard:update', {
+                totalLikes: likes,
+                totalDislikes: dislikes,
+                totalViews: likes + dislikes,
+                hasResume: owner.resumes.length > 0,
+              });
+            }
+          } catch (e) {
+            console.error('Error emitting dashboard after upload:', e);
+          }
+        }
+
         res.json({ message: "Resume uploaded successfully", url: result.secure_url });
       }
     );
